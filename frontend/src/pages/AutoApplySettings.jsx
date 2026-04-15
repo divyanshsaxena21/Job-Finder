@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../styles/auto-apply-settings.css';
 
 const AutoApplySettings = () => {
+  // Auto-apply settings component for managing job application automation
   const [preferences, setPreferences] = useState({
     github_username: '',
     auto_apply_enabled: false,
