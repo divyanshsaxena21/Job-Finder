@@ -42,7 +42,7 @@ const AutoApplySettings = () => {
     console.error('VITE_API_URL environment variable not set');
   }
 
-  useEffect(() {
+  useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
       navigate('/login');
