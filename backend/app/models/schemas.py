@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, HttpUrl
 from datetime import datetime
 from typing import Optional, List
 from enum import Enum
@@ -60,6 +60,16 @@ class UserPreferencesUpdate(BaseModel):
     min_salary: Optional[int] = None
     max_salary: Optional[int] = None
     base_resume: Optional[str] = None
+    # Social profiles
+    github_username: Optional[str] = None
+    github_token: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    linkedin_email: Optional[str] = None
+    # Auto-apply settings
+    auto_apply_enabled: Optional[bool] = False
+    auto_apply_frequency: Optional[str] = "daily"  # daily, weekly, bi-weekly
+    include_github_projects: Optional[bool] = True
+    max_daily_applications: Optional[int] = 5
 
 
 class UserPreferencesResponse(BaseModel):
@@ -72,6 +82,12 @@ class UserPreferencesResponse(BaseModel):
     min_salary: Optional[int] = None
     max_salary: Optional[int] = None
     base_resume: Optional[str] = None
+    github_username: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    auto_apply_enabled: bool = False
+    auto_apply_frequency: str = "daily"
+    include_github_projects: bool = True
+    max_daily_applications: int = 5
 
 
 # ===== JOB SCHEMAS =====
@@ -115,6 +131,43 @@ class JobMatchResult(BaseModel):
     reason: str
     missing_skills: List[str]
     strengths: List[str]
+
+
+# ===== GITHUB INTEGRATION =====
+class GitHubRepo(BaseModel):
+    name: str
+    url: str
+    description: Optional[str] = None
+    language: Optional[str] = None
+    stars: int = 0
+    topics: List[str] = []
+
+
+class GitHubProfile(BaseModel):
+    username: str
+    name: Optional[str] = None
+    bio: Optional[str] = None
+    repos: List[GitHubRepo] = []
+    public_repos: int = 0
+
+
+# ===== AUTO-APPLY SCHEMAS =====
+class AutoApplyJob(BaseModel):
+    job_id: str
+    status: str  # "pending", "applied", "failed", "skipped"
+    applied_at: Optional[datetime] = None
+    error_message: Optional[str] = None
+
+
+class AutoApplyRun(BaseModel):
+    user_id: str
+    started_at: datetime
+    completed_at: Optional[datetime] = None
+    jobs_found: int = 0
+    jobs_applied: int = 0
+    jobs_skipped: int = 0
+    jobs_failed: int = 0
+    details: List[AutoApplyJob] = []
 
 
 # ===== RESUME & COVER LETTER SCHEMAS =====

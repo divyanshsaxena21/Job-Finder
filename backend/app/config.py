@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> List[str]:
         """Parse CORS origins from comma-separated string"""
-        origins = [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+        origins = [origin.strip().rstrip('/') for origin in self.cors_origins.split(",") if origin.strip()]
         # In production, allow all vercel.app subdomains
         if any("*.vercel.app" in origin for origin in origins):
             # Keep the wildcard for now; Vercel domains will be handled

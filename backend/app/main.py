@@ -3,8 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.config import settings
 from app.models.database import MongoDB
-from app.api import auth, jobs, applications, preferences
+from app.api import auth, jobs, applications, preferences, auto_apply
 from app.compat import check_imports
+from app.scheduler import init_scheduler, stop_scheduler
 
 import logging
 
@@ -41,10 +42,18 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 Starting Job Finder API...")
     await MongoDB.connect_db(settings.mongodb_url, settings.db_name)
     
+    # Initialize scheduler for auto-apply tasks
+    try:
+        init_scheduler()
+        logger.info("✓ Scheduler initialized successfully")
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to initialize scheduler: {str(e)}")
+    
     yield
     
     # Shutdown
     logger.info("🛑 Shutting down Job Finder API...")
+    stop_scheduler()
     await MongoDB.close_db()
 
 
@@ -73,6 +82,7 @@ app.include_router(auth.router)
 app.include_router(jobs.router)
 app.include_router(applications.router)
 app.include_router(preferences.router)
+app.include_router(auto_apply.router)
 
 
 @app.get("/health")

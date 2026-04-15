@@ -49,6 +49,7 @@ export const Dashboard = () => {
             <li><a href="/dashboard" className="active">Dashboard</a></li>
             <li><a href="/resume">My Resume</a></li>
             <li><a href="/applications">Applications</a></li>
+            <li><a href="/auto-apply">🤖 Auto-Apply</a></li>
             <li><a href="/preferences">Preferences</a></li>
           </ul>
         </div>

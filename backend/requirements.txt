@@ -14,3 +14,7 @@ aiohttp
 tenacity
 python-multipart
 gunicorn
+apscheduler
+playwright
+beautifulsoup4
+lxml

@@ -43,6 +43,10 @@ class MongoDB:
         
         # User preferences indexes
         await cls.db.user_preferences.create_index([("user_id", ASCENDING)], unique=True)
+        
+        # Auto-apply runs indexes
+        await cls.db.auto_apply_runs.create_index([("user_id", ASCENDING)])
+        await cls.db.auto_apply_runs.create_index([("started_at", DESCENDING)])
 
     @classmethod
     def get_db(cls):
@@ -65,3 +69,7 @@ def get_applications_collection():
 
 def get_preferences_collection():
     return MongoDB.get_db().user_preferences
+
+
+def get_auto_apply_runs_collection():
+    return MongoDB.get_db().auto_apply_runs

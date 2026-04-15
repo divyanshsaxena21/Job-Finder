@@ -27,7 +27,15 @@ async def get_preferences(
             job_type=prefs.get("job_type", []),
             min_salary=prefs.get("min_salary"),
             max_salary=prefs.get("max_salary"),
-            base_resume=prefs.get("base_resume")
+            base_resume=prefs.get("base_resume"),
+            github_username=prefs.get("github_username"),
+            github_token=prefs.get("github_token"),
+            linkedin_url=prefs.get("linkedin_url"),
+            linkedin_email=prefs.get("linkedin_email"),
+            auto_apply_enabled=prefs.get("auto_apply_enabled", False),
+            auto_apply_frequency=prefs.get("auto_apply_frequency", "daily"),
+            include_github_projects=prefs.get("include_github_projects", True),
+            max_daily_applications=prefs.get("max_daily_applications", 5)
         )
     except HTTPException:
         raise
@@ -61,7 +69,15 @@ async def update_preferences(
             job_type=updated_prefs.get("job_type", []),
             min_salary=updated_prefs.get("min_salary"),
             max_salary=updated_prefs.get("max_salary"),
-            base_resume=updated_prefs.get("base_resume")
+            base_resume=updated_prefs.get("base_resume"),
+            github_username=updated_prefs.get("github_username"),
+            github_token=updated_prefs.get("github_token"),
+            linkedin_url=updated_prefs.get("linkedin_url"),
+            linkedin_email=updated_prefs.get("linkedin_email"),
+            auto_apply_enabled=updated_prefs.get("auto_apply_enabled", False),
+            auto_apply_frequency=updated_prefs.get("auto_apply_frequency", "daily"),
+            include_github_projects=updated_prefs.get("include_github_projects", True),
+            max_daily_applications=updated_prefs.get("max_daily_applications", 5)
         )
     except HTTPException:
         raise

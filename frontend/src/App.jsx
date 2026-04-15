@@ -12,6 +12,7 @@ import { ResumeManager } from './pages/ResumeManager'
 import { JobDetail } from './pages/JobDetail'
 import { Applications } from './pages/Applications'
 import { Preferences } from './pages/Preferences'
+import AutoApplySettings from './pages/AutoApplySettings'
 
 function AppContent() {
   const { isAuthenticated, loading } = React.useContext(AuthContext)
@@ -77,6 +78,15 @@ function AppContent() {
         element={
           <ProtectedRoute>
             <Preferences />
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route
+        path="/auto-apply"
+        element={
+          <ProtectedRoute>
+            <AutoApplySettings />
           </ProtectedRoute>
         }
       />
