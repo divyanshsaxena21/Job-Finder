@@ -5,7 +5,7 @@ Manages automated job applications.
 """
 
 from fastapi import APIRouter, HTTPException, Depends, status
-from app.models.database import get_users_collection, get_auto_apply_runs_collection
+from app.models.database import get_users_collection, get_auto_apply_runs_collection, get_preferences_collection
 from app.models.schemas import UserPreferencesResponse
 from app.services.auto_apply import AutoApplyOrchestrator
 from app.utils.dependencies import get_current_user
@@ -32,9 +32,10 @@ async def trigger_auto_apply(
         if not user_id:
             raise HTTPException(status_code=401, detail="Unauthorized")
         
-        # Check if auto-apply is enabled
-        prefs = current_user.get("preferences", {})
-        if not prefs.get("auto_apply_enabled"):
+        # Fetch preferences from preferences collection
+        prefs_col = get_preferences_collection()
+        prefs = await prefs_col.find_one({"user_id": str(user_id)})
+        if not prefs or not prefs.get("auto_apply_enabled"):
             raise HTTPException(
                 status_code=400, 
                 detail="Auto-apply not enabled. Update preferences first."
@@ -199,10 +200,21 @@ async def get_scheduler_status(
         if not user_id:
             raise HTTPException(status_code=401, detail="Unauthorized")
         
-        prefs = current_user.get("preferences", {})
+        # Fetch preferences from preferences collection
+        prefs_col = get_preferences_collection()
+        prefs = await prefs_col.find_one({"user_id": str(user_id)})
+        
+        if not prefs:
+            return {
+                "scheduler_running": False,
+                "auto_apply_enabled": False,
+                "auto_apply_frequency": "daily",
+                "next_scheduled_run": None,
+                "scheduled_time": "09:00 UTC (Daily)"
+            }
         
         return {
-            "scheduler_running": True,
+            "scheduler_running": prefs.get("auto_apply_enabled", False),
             "auto_apply_enabled": prefs.get("auto_apply_enabled", False),
             "auto_apply_frequency": prefs.get("auto_apply_frequency", "daily"),
             "next_scheduled_run": None,
