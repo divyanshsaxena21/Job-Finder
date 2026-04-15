@@ -4,7 +4,7 @@ services:
     runtime: python
     pythonVersion: 3.11
     buildCommand: "bash render-build.sh"
-    startCommand: "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    startCommand: "cd backend && gunicorn -w 1 -k uvicorn.workers.UvicornWorker --timeout 120 app.main:app"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11
@@ -12,14 +12,5 @@ services:
         value: 1
       - key: PYTHONUNBUFFERED
         value: 1
-
-  - type: web
-    name: job-finder-frontend
-    runtime: node
-    buildCommand: "cd frontend && npm install && npm run build"
-    startCommand: "cd frontend && npm run preview -- --host 0.0.0.0 --port 5173"
-    envVars:
-      - key: VITE_API_URL
-        sync: false
-      - key: NODE_ENV
-        value: production
+      - key: PYTHONDONTWRITEBYTECODE
+        value: 1

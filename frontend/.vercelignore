@@ -1,0 +1,23 @@
+# Vercel ignore patterns
+node_modules
+coverage
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+.git
+.gitignore
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Backend files (not needed in frontend deployment)
+backend/
+.env.example
+.env.local.example
+.env.production.example
