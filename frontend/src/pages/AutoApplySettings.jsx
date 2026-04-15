@@ -118,7 +118,7 @@ const AutoApplySettings = () => {
   };
 
   const handleSavePreferences = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     try {
       setSaving(true);
       const updateData = {
@@ -147,7 +147,7 @@ const AutoApplySettings = () => {
   };
 
   const handleTriggerAutoApply = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     try {
       setTriggering(true);
       const response = await axios.post(`${API_BASE_URL}/auto-apply/trigger`, {}, {
