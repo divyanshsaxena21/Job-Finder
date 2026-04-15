@@ -4,8 +4,12 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.models.database import MongoDB
 from app.api import auth, jobs, applications, preferences
+from app.compat import check_imports
 
 import logging
+
+# Validate all dependencies are available
+check_imports()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

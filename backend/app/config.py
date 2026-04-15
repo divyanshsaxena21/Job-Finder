@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 from typing import Optional, List
 
 
@@ -31,9 +32,7 @@ class Settings(BaseSettings):
     # Limits
     daily_application_limit: int = 5
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = ConfigDict(env_file=".env", case_sensitive=False)
     
     @property
     def cors_origins_list(self) -> List[str]:

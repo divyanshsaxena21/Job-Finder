@@ -1,6 +1,11 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer
-from fastapi.security.http import HTTPAuthorizationCredentials
+try:
+    from fastapi.security import HTTPAuthorizationCredentials
+except ImportError:
+    # Fallback for different fastapi versions
+    from fastapi.security.http import HTTPAuthorizationCredentials
+
 from app.utils.auth import decode_access_token
 from app.models.database import get_users_collection
 from bson import ObjectId
