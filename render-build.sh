@@ -6,13 +6,15 @@ echo "Starting Render build process..."
 # Navigate to backend directory
 cd backend
 
-# Upgrade pip to latest version
-echo "Upgrading pip..."
+# Upgrade pip, setuptools, and wheel to latest versions
+echo "Upgrading pip, setuptools, and wheel..."
 pip install --upgrade pip setuptools wheel
 
-# Install all Python dependencies
-# Use --no-build-isolation to avoid read-only filesystem issues
+# Install dependencies using only pre-built wheels (no build from source)
+# This avoids issues with maturin and Rust compilation on read-only filesystem
 echo "Installing Python dependencies..."
-pip install --no-build-isolation -r requirements.txt
+pip install --only-binary=:all: -r requirements.txt || \
+pip install --prefer-binary -r requirements.txt || \
+pip install -r requirements.txt
 
 echo "✓ Build completed successfully!"
