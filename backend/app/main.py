@@ -17,21 +17,14 @@ logger = logging.getLogger(__name__)
 
 
 def get_allowed_origins() -> list:
-    """Get list of allowed origins, expanding wildcards for Vercel"""
+    """Get list of allowed origins for CORS"""
     origins = settings.cors_origins_list
-    expanded = []
-    
-    for origin in origins:
-        if "*.vercel.app" in origin:
-            # Add common Vercel patterns
-            expanded.extend([
-                "https://job-finder-pearl.vercel.app",  # Your specific domain
-                "https://job-finder.vercel.app",
-            ])
-        else:
-            expanded.append(origin)
-    
-    return list(set(expanded)) if expanded else origins
+    return list(set(origins)) if origins else [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://job-finder-pearl.vercel.app",
+        "https://job-finder-beta-seven.vercel.app"
+    ]
 
 
 @asynccontextmanager

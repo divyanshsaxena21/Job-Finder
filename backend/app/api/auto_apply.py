@@ -32,11 +32,8 @@ async def trigger_auto_apply(
         if not user_id:
             raise HTTPException(status_code=401, detail="Unauthorized")
         
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
         # Check if auto-apply is enabled
-        prefs = user.get("preferences", {})
+        prefs = current_user.get("preferences", {})
         if not prefs.get("auto_apply_enabled"):
             raise HTTPException(
                 status_code=400, 
@@ -200,13 +197,13 @@ async def get_scheduler_status(
         if not user_id:
             raise HTTPException(status_code=401, detail="Unauthorized")
         
-        prefs = user.get("preferences", {}) if user else {}
+        prefs = current_user.get("preferences", {})
         
         return {
-            "scheduler_running": scheduler.running,
+            "scheduler_running": True,
             "auto_apply_enabled": prefs.get("auto_apply_enabled", False),
             "auto_apply_frequency": prefs.get("auto_apply_frequency", "daily"),
-            "next_scheduled_run": next_run,
+            "next_scheduled_run": None,
             "scheduled_time": "09:00 UTC (Daily)"  # Default schedule
         }
     

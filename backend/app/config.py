@@ -24,8 +24,8 @@ class Settings(BaseSettings):
     frontend_url: str = "https://job-finder-pearl.vercel.app"
     
     # CORS - comma-separated list of allowed origins
-    # For Render + Vercel: https://job-finder-pearl.vercel.app,https://*.vercel.app
-    cors_origins: str = "https://job-finder-pearl.vercel.app,https://*.vercel.app"
+    # For local dev + Render + Vercel: localhost:5173,localhost:3000,https://job-finder-pearl.vercel.app,https://job-finder-beta-seven.vercel.app
+    cors_origins: str = "http://localhost:5173,http://localhost:3000,https://job-finder-pearl.vercel.app,https://job-finder-beta-seven.vercel.app"
     
     # Environment
     environment: str = "development"
