@@ -63,7 +63,7 @@ async def trigger_auto_apply(
         # Run auto-apply (this would be async background task in production)
         logger.info(f"Manually triggered auto-apply for user {user_id}")
         
-        result = await AutoApplyOrchestrator.run_auto_apply_cycle(user_id, prefs_obj)
+        result = await AutoApplyOrchestrator.run_auto_apply_cycle(str(user_id), prefs_obj)
         
         return {
             "status": "completed",
@@ -104,7 +104,7 @@ async def get_auto_apply_history(
         
         # Get recent runs for this user
         runs = await auto_apply_col.find(
-            {"user_id": ObjectId(user_id)}
+            {"user_id": str(user_id)}
         ).sort("started_at", -1).limit(limit).to_list(None)
         
         # Convert ObjectIds to strings for JSON serialization
@@ -145,7 +145,7 @@ async def get_auto_apply_stats(
         
         # Get all runs for this user
         runs = await auto_apply_col.find(
-            {"user_id": ObjectId(user_id)}
+            {"user_id": str(user_id)}
         ).to_list(None)
         
         if not runs:

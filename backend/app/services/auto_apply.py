@@ -174,9 +174,8 @@ class AutoApplyOrchestrator:
             # Save run to database for history tracking
             try:
                 auto_apply_col = get_auto_apply_runs_collection()
-                from bson import ObjectId
                 run_data = {
-                    "user_id": ObjectId(user_id),
+                    "user_id": user_id,  # Keep as string, matches schema
                     "started_at": run.started_at,
                     "completed_at": run.completed_at,
                     "jobs_found": run.jobs_found,
