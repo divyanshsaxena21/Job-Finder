@@ -192,9 +192,10 @@ class AutoApplyOrchestrator:
                         for detail in run.details
                     ]
                 }
-                await auto_apply_col.insert_one(run_data)
+                result = await auto_apply_col.insert_one(run_data)
+                logger.info(f"✓ Auto-apply run saved to database: {result.inserted_id}")
             except Exception as e:
-                logger.warning(f"Failed to save auto-apply run to database: {str(e)}")
+                logger.error(f"❌ Failed to save auto-apply run to database: {str(e)}", exc_info=True)
             
             return run
         
