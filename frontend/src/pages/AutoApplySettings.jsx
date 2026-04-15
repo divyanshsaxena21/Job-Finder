@@ -35,9 +35,13 @@ const AutoApplySettings = () => {
   const [activeTab, setActiveTab] = useState('settings');
 
   const navigate = useNavigate();
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
+  if (!API_BASE_URL) {
+    console.error('VITE_API_URL environment variable not set');
+  }
 
-  useEffect(() => {
+  useEffect(() {
     const token = localStorage.getItem('access_token');
     if (!token) {
       navigate('/login');
