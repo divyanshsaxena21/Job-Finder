@@ -6,6 +6,7 @@ from app.models.database import MongoDB
 from app.api import auth, jobs, applications, preferences, auto_apply
 from app.compat import check_imports
 from app.scheduler import init_scheduler, stop_scheduler
+from ensure_playwright import ensure_playwright_installed
 
 import logging
 
@@ -33,6 +34,11 @@ async def lifespan(app: FastAPI):
     
     # Startup
     logger.info("🚀 Starting Job Finder API...")
+    
+    # Ensure Playwright browsers are installed
+    logger.info("Checking Playwright browsers...")
+    ensure_playwright_installed()
+    
     await MongoDB.connect_db(settings.mongodb_url, settings.db_name)
     
     # Initialize scheduler for auto-apply tasks
