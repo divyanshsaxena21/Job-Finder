@@ -86,12 +86,19 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
+  gap: 20px;
 }
 
 .dashboard-header h2 {
   color: #333;
   margin: 0;
   font-size: 28px;
+  flex: 1;
+}
+
+.dashboard-header button {
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .filter-section {

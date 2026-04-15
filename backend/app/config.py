@@ -20,13 +20,12 @@ class Settings(BaseSettings):
     telegram_bot_token: str
     
     # URLs
-    backend_url: str = "http://localhost:8000"
-    frontend_url: str = "http://localhost:5173"
+    backend_url: str = "https://your-backend.onrender.com"
+    frontend_url: str = "https://job-finder-pearl.vercel.app"
     
     # CORS - comma-separated list of allowed origins
-    # Development: http://localhost:5173,http://localhost:3000
-    # Production: https://your-vercel-domain.vercel.app,https://your-domain.com
-    cors_origins: str = "http://localhost:5173,http://localhost:3000,https://*.vercel.app"
+    # For Render + Vercel: https://job-finder-pearl.vercel.app,https://*.vercel.app
+    cors_origins: str = "https://job-finder-pearl.vercel.app,https://*.vercel.app"
     
     # Environment
     environment: str = "development"
