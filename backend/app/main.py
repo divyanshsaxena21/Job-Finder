@@ -15,6 +15,24 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def get_allowed_origins() -> list:
+    """Get list of allowed origins, expanding wildcards for Vercel"""
+    origins = settings.cors_origins_list
+    expanded = []
+    
+    for origin in origins:
+        if "*.vercel.app" in origin:
+            # Add common Vercel patterns
+            expanded.extend([
+                "https://job-finder-pearl.vercel.app",  # Your specific domain
+                "https://job-finder.vercel.app",
+            ])
+        else:
+            expanded.append(origin)
+    
+    return list(set(expanded)) if expanded else origins
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage app lifecycle: startup and shutdown"""
@@ -38,10 +56,13 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
+# CORS middleware - Allow requests from frontend
+allowed_origins = get_allowed_origins()
+logger.info(f"✓ CORS allowed origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -24,7 +24,9 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:5173"
     
     # CORS - comma-separated list of allowed origins
-    cors_origins: str = "http://localhost:5173,http://localhost:3000"
+    # Development: http://localhost:5173,http://localhost:3000
+    # Production: https://your-vercel-domain.vercel.app,https://your-domain.com
+    cors_origins: str = "http://localhost:5173,http://localhost:3000,https://*.vercel.app"
     
     # Environment
     environment: str = "development"
@@ -37,7 +39,12 @@ class Settings(BaseSettings):
     @property
     def cors_origins_list(self) -> List[str]:
         """Parse CORS origins from comma-separated string"""
-        return [origin.strip() for origin in self.cors_origins.split(",")]
+        origins = [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+        # In production, allow all vercel.app subdomains
+        if any("*.vercel.app" in origin for origin in origins):
+            # Keep the wildcard for now; Vercel domains will be handled
+            pass
+        return origins
 
 
 settings = Settings()
