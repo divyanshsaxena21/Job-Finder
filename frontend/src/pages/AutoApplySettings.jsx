@@ -38,7 +38,7 @@ const AutoApplySettings = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     if (!token) {
       navigate('/login');
       return;
@@ -48,7 +48,7 @@ const AutoApplySettings = () => {
   }, []);
 
   const fetchData = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     try {
       setLoading(true);
 
