@@ -42,7 +42,7 @@ async def trigger_auto_apply(
         
         # Convert to UserPreferencesResponse
         prefs_obj = UserPreferencesResponse(
-            user_id=user_id,
+            user_id=str(user_id),
             skills=prefs.get("skills", []),
             roles=prefs.get("roles", []),
             experience=prefs.get("experience"),
@@ -52,7 +52,9 @@ async def trigger_auto_apply(
             max_salary=prefs.get("max_salary"),
             base_resume=prefs.get("base_resume"),
             github_username=prefs.get("github_username"),
+            linkedin_url=prefs.get("linkedin_url"),
             auto_apply_enabled=True,
+            auto_apply_frequency=prefs.get("auto_apply_frequency", "daily"),
             include_github_projects=prefs.get("include_github_projects", True),
             max_daily_applications=prefs.get("max_daily_applications", 5)
         )
