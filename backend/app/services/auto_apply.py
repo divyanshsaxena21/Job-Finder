@@ -21,6 +21,9 @@ from app.models.database import (
 )
 from app.config import settings
 import logging
+import sys
+import asyncio
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +33,46 @@ class AutoApplyOrchestrator:
     
     @staticmethod
     async def run_auto_apply_cycle(user_id: str, preferences: UserPreferencesResponse) -> AutoApplyRun:
+        """
+        Execute a complete auto-apply cycle. On Windows, routes execution to a dedicated
+        OS thread with a ProactorEventLoop to support Playwright subprocesses under ASGI servers.
+        """
+        if sys.platform == "win32":
+            logger.info("Windows detected: Offloading auto-apply cycle to a dedicated ProactorEventLoop thread")
+            result_holder = {}
+            
+            def run_in_thread():
+                try:
+                    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    
+                    # Run the original implementation to completion
+                    result = loop.run_until_complete(
+                        AutoApplyOrchestrator._run_auto_apply_cycle_impl(user_id, preferences)
+                    )
+                    result_holder['result'] = result
+                except Exception as e:
+                    logger.error(f"Error in auto-apply Proactor thread: {str(e)}")
+                    result_holder['error'] = e
+                finally:
+                    loop.close()
+
+            thread = threading.Thread(target=run_in_thread)
+            thread.start()
+            
+            # Asynchronously wait for the thread to complete
+            while thread.is_alive():
+                await asyncio.sleep(0.5)
+                
+            if 'error' in result_holder:
+                raise result_holder['error']
+            return result_holder.get('result')
+        else:
+            return await AutoApplyOrchestrator._run_auto_apply_cycle_impl(user_id, preferences)
+
+    @staticmethod
+    async def _run_auto_apply_cycle_impl(user_id: str, preferences: UserPreferencesResponse) -> AutoApplyRun:
         """
         Execute a complete auto-apply cycle:
         1. Scrape jobs

@@ -8,8 +8,8 @@ bcrypt
 python-dotenv
 pyjwt
 email-validator
-groq
-python-telegram-bot
+groq>=1.6.0
+python-telegram-bot>=22.8
 aiohttp
 tenacity
 python-multipart

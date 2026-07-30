@@ -40,6 +40,59 @@ const TECHNICAL_SKILLS = [
   'Data Science', 'Analytics', 'Big Data', 'Spark', 'Hadoop',
 ]
 
+// Dynamic script loaders for client-side document parsing
+const loadPdfJs = () => {
+  return new Promise((resolve) => {
+    if (window.pdfjsLib) {
+      resolve(window.pdfjsLib)
+      return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
+    script.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+      resolve(window.pdfjsLib)
+    }
+    document.head.appendChild(script)
+  })
+}
+
+const loadMammoth = () => {
+  return new Promise((resolve) => {
+    if (window.mammoth) {
+      resolve(window.mammoth)
+      return
+    }
+    const script = document.createElement('script')
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js'
+    script.onload = () => {
+      resolve(window.mammoth)
+    }
+    document.head.appendChild(script)
+  })
+}
+
+const extractTextFromPdf = async (file) => {
+  const pdfjsLib = await loadPdfJs()
+  const arrayBuffer = await file.arrayBuffer()
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+  let fullText = ''
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i)
+    const textContent = await page.getTextContent()
+    const pageText = textContent.items.map(item => item.str).join(' ')
+    fullText += pageText + '\n'
+  }
+  return fullText
+}
+
+const extractTextFromDocx = async (file) => {
+  const mammoth = await loadMammoth()
+  const arrayBuffer = await file.arrayBuffer()
+  const result = await mammoth.extractRawText({ arrayBuffer })
+  return result.value
+}
+
 export const ResumeManager = () => {
   const navigate = useNavigate()
   const [savedResume, setSavedResume] = useState('')
@@ -89,16 +142,43 @@ export const ResumeManager = () => {
     }
   }
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const text = event.target.result
+    setSaving(true)
+    setMessage('')
+
+    try {
+      let text = ''
+      if (file.name.toLowerCase().endsWith('.pdf')) {
+        text = await extractTextFromPdf(file)
+      } else if (file.name.toLowerCase().endsWith('.docx')) {
+        text = await extractTextFromDocx(file)
+      } else if (file.name.toLowerCase().endsWith('.txt')) {
+        const reader = new FileReader()
+        text = await new Promise((resolve, reject) => {
+          reader.onload = (event) => resolve(event.target.result)
+          reader.onerror = (err) => reject(err)
+          reader.readAsText(file)
+        })
+      } else {
+        throw new Error('Unsupported file format. Please upload .pdf, .docx, or .txt')
+      }
+
+      if (!text.trim()) {
+        throw new Error('Could not extract text from file or the file is empty.')
+      }
+
       setResumeText(text)
+      setMessage('✓ File parsed successfully!')
+      setTimeout(() => setMessage(''), 3000)
+    } catch (err) {
+      console.error(err)
+      setMessage(`✗ Failed to parse file: ${err.message || err}`)
+    } finally {
+      setSaving(false)
     }
-    reader.readAsText(file)
   }
 
   const handlePasteResume = () => {
@@ -225,11 +305,11 @@ export const ResumeManager = () => {
             <div className="upload-options">
               <div className="option">
                 <h4>Option 1: Upload File</h4>
-                <p>Upload a .txt file from your computer</p>
+                <p>Upload a .pdf, .docx, or .txt file</p>
                 <label className="file-input-label">
                   <input
                     type="file"
-                    accept=".txt"
+                    accept=".pdf,.docx,.txt"
                     onChange={handleFileUpload}
                     className="file-input"
                   />
